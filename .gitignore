@@ -1,4 +1,8 @@
-*
-!.gitignore
-!cardmarket_price_fill.py
-!README.md
+.DS_Store
+__pycache__/
+.scryfall_cache.json
+collection.csv
+collection.with_prices.csv
+prices.json
+products.json
+scryfall_bulk.json
