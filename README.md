@@ -21,15 +21,15 @@ Scryfall:
 
 ## Usage
 
-Place your files in the project folder or provide full paths.
+Place your files in the project folder or provide custom paths.
 
 ```bash
-python3 /Users/robinvyslouzil/Projects/Private/mtg-price-getter/cardmarket_price_fill.py \
-  --collection /Users/robinvyslouzil/Projects/Private/mtg-price-getter/collection.csv \
-  --products /Users/robinvyslouzil/Projects/Private/mtg-price-getter/products.json \
-  --prices /Users/robinvyslouzil/Projects/Private/mtg-price-getter/prices.json \
-  --scryfall-bulk /Users/robinvyslouzil/Projects/Private/mtg-price-getter/scryfall_bulk.json \
-  --output /Users/robinvyslouzil/Projects/Private/mtg-price-getter/collection.with_prices.csv
+python3 cardmarket_price_fill.py \
+  --collection ./data/collection.csv \
+  --products ./data/products.json \
+  --prices ./data/prices.json \
+  --scryfall-bulk ./data/scryfall_bulk.json \
+  --output ./out/collection.with_prices.csv
 ```
 
 ### Output columns
@@ -46,5 +46,5 @@ The script adds:
 
 ## Files
 
-- Script: `/Users/robinvyslouzil/Projects/Private/mtg-price-getter/cardmarket_price_fill.py`
-- Output (example): `/Users/robinvyslouzil/Projects/Private/mtg-price-getter/collection.with_prices.csv`
+- Script: `cardmarket_price_fill.py`
+- Output (example): `out/collection.with_prices.csv`
