@@ -16,7 +16,7 @@ Cardmarket:
 - Product list (Magic singles): [products_singles_1.json](https://downloads.s3.cardmarket.com/productCatalog/productList/products_singles_1.json)
 
 Scryfall:
-- Bulk data index (choose **Default Cards**): [https://api.scryfall.com/bulk-data](https://api.scryfall.com/bulk-data)
+- Bulk data index (choose **Default Cards** for English only, or **All cards** for all mutations): [https://api.scryfall.com/bulk-data](https://scryfall.com/docs/api/bulk-data)
   - From the JSON, pick the `download_uri` for `default_cards` and download it (this is what the script expects for `--scryfall-bulk`).
 
 ## Usage
