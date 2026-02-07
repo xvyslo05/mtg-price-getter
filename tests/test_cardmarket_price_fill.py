@@ -175,6 +175,64 @@ class CardmarketPriceFillTests(unittest.TestCase):
             self.assertTrue(out_rows[2]["card market price"])
             self.assertNotEqual(out_rows[2]["card market price"], out_rows[0]["card market price"])
 
+    def test_main_pretty_output_removes_requested_columns(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            collection = tmp / "collection.csv"
+            products = tmp / "products.json"
+            prices = tmp / "prices.json"
+            output = tmp / "out.csv"
+
+            collection.write_text(
+                "Name,Set code,Set name,Collector number,Foil,ManaBox ID,Scryfall ID,Purchase price,Misprint,Altered,Condition,Language,Purchase price currency\n"
+                "Emptiness,ECL,Lorwyn Eclipsed,222,normal,999,id-normal,1.23,false,false,near_mint,en,EUR\n",
+                encoding="utf-8",
+            )
+            products.write_text(
+                json.dumps({"products": [{"idProduct": 100, "name": "Emptiness", "idExpansion": 1}]}),
+                encoding="utf-8",
+            )
+            prices.write_text(
+                json.dumps({"priceGuides": [{"idProduct": 100, "avg7": 7.02, "avg7-foil": 7.20}]}),
+                encoding="utf-8",
+            )
+
+            argv = [
+                "cardmarket_price_fill.py",
+                "--collection",
+                str(collection),
+                "--products",
+                str(products),
+                "--prices",
+                str(prices),
+                "--no-scryfall",
+                "--pretty-output",
+                "--output",
+                str(output),
+            ]
+            with patch("sys.argv", argv):
+                rc = script.main()
+
+            self.assertEqual(rc, 0)
+            with output.open("r", encoding="utf-8", newline="") as f:
+                reader = csv.DictReader(f)
+                headers = reader.fieldnames or []
+                out_rows = list(reader)
+
+            self.assertEqual(len(out_rows), 1)
+            self.assertIn("card market price", headers)
+            self.assertIn("card market type", headers)
+            self.assertNotIn("Collector number", headers)
+            self.assertNotIn("ManaBox ID", headers)
+            self.assertNotIn("Scryfall ID", headers)
+            self.assertNotIn("Purchase price", headers)
+            self.assertNotIn("Misprint", headers)
+            self.assertNotIn("Altered", headers)
+            self.assertNotIn("Condition", headers)
+            self.assertNotIn("Language", headers)
+            self.assertNotIn("Purchase price currency", headers)
+            self.assertNotIn("card market finish", headers)
+
 
 if __name__ == "__main__":
     unittest.main()

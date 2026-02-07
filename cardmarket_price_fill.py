@@ -251,6 +251,11 @@ def _pick_column(headers: Iterable[str], candidates: Iterable[str]) -> Optional[
     return None
 
 
+def _filter_headers(headers: List[str], remove_columns: Iterable[str]) -> List[str]:
+    remove_set = {c.lower() for c in remove_columns}
+    return [h for h in headers if h.lower() not in remove_set]
+
+
 def _build_product_index(products: List[Dict[str, str]], headers: List[str]) -> Tuple[Dict[str, Dict[str, str]], Dict[Tuple[str, str, str, Optional[bool]], List[str]]]:
     id_col = _pick_column(headers, ["idProduct", "productId", "id", "Product ID", "ProductId"])
     name_col = _pick_column(headers, ["Name", "name", "Product Name", "productName"])
@@ -357,6 +362,11 @@ def main() -> int:
     parser.add_argument("--scryfall-cache", default=".scryfall_cache.json", help="Cache file for Scryfall lookups.")
     parser.add_argument("--scryfall-delay", type=float, default=0.12, help="Delay between Scryfall requests (seconds).")
     parser.add_argument("--scryfall-bulk", help="Path to Scryfall bulk data JSON (offline lookups).")
+    parser.add_argument(
+        "--pretty-output",
+        action="store_true",
+        help="Remove internal/metadata columns from the output CSV.",
+    )
     args = parser.parse_args()
 
     collection_rows, collection_headers, collection_dialect = _read_csv(args.collection)
@@ -385,6 +395,22 @@ def main() -> int:
         output_headers.append("card market finish")
     if args.add_product_id and "card market product id" not in output_headers:
         output_headers.append("card market product id")
+    if args.pretty_output:
+        output_headers = _filter_headers(
+            output_headers,
+            [
+                "Collector number",
+                "ManaBox ID",
+                "Scryfall ID",
+                "Purchase price",
+                "Misprint",
+                "Altered",
+                "Condition",
+                "Language",
+                "Purchase price currency",
+                "Card market finish",
+            ],
+        )
 
     use_scryfall = not args.no_scryfall and (scryfall_col or (set_code_col and num_col))
     scryfall_cache = _load_scryfall_cache(args.scryfall_cache) if use_scryfall else {}
@@ -468,7 +494,7 @@ def main() -> int:
         row_out["card market finish"] = finish
         if args.add_product_id:
             row_out["card market product id"] = matched_id
-        output_rows.append(row_out)
+        output_rows.append({h: row_out.get(h, "") for h in output_headers})
 
     output_path = args.output or (args.collection + ".with_prices.csv")
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)

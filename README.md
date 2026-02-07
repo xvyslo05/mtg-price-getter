@@ -32,6 +32,19 @@ python3 cardmarket_price_fill.py \
   --output ./out/collection.with_prices.csv
 ```
 
+Optional:
+
+```bash
+# Remove internal metadata columns from output
+python3 cardmarket_price_fill.py \
+  --collection ./data/collection.csv \
+  --products ./data/products.json \
+  --prices ./data/prices.json \
+  --scryfall-bulk ./data/scryfall_bulk.json \
+  --pretty-output \
+  --output ./out/collection.pretty.csv
+```
+
 ### Output columns
 
 The script adds:
@@ -43,6 +56,17 @@ The script adds:
 
 - If you omit `--scryfall-bulk`, the script can still try live Scryfall lookups, but offline bulk data is faster and more reliable.
 - Tokens and emblems generally do not have Cardmarket prices; those rows will remain blank.
+- `--pretty-output` removes these columns:
+  - `Collector number`
+  - `ManaBox ID`
+  - `Scryfall ID`
+  - `Purchase price`
+  - `Misprint`
+  - `Altered`
+  - `Condition`
+  - `Language`
+  - `Purchase price currency`
+  - `card market finish`
 
 ## Files
 
